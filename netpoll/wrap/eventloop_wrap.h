@@ -63,7 +63,7 @@ private:
    std::shared_ptr<EventLoopThreadPool> m_pool;
 };
 
-inline EventLoopWrap NewEventLoop(size_t                     threadNum = 4,
+inline EventLoopWrap NewEventLoop(size_t                     threadNum = 2,
                                   const netpoll::StringView &name = "eventloop")
 {
    return EventLoopWrap::New(threadNum, name);

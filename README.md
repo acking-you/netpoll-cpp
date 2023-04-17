@@ -55,6 +55,7 @@
 (如果网络问题,可以尝试换仓库链接:https://gitee.com/acking-you/netpoll-cpp.git)
 
 ```cmake
+include(FetchContent)
 FetchContent_Declare(
         netpoll-cpp
         GIT_REPOSITORY https://github.com/ACking-you/netpoll-cpp.git
