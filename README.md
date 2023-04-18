@@ -9,7 +9,7 @@
   C++)/[netty](https://netty.io/wiki/index.html)(
   java)/[netpoll](https://www.cloudwego.io/zh/docs/netpoll/)(go语言)
   在作为echo服务器的表现上延迟达到最低.
-* 支持一键文件发送,如果所在操作系统支持 `sendfile` 调用,则会调用该零拷贝调用而不是调用C标准库.
+* 文件的发送结合了 `EventLoop` 实现异步调用,如果所在操作系统支持 `sendfile` 调用,则会调用该零拷贝调用而不是调用C标准库.
 * 易用性超高,比如想要写一个 `echo` 服务器,只需要下面的代码:
   ```cpp
   struct server 
@@ -30,6 +30,7 @@
   具体可以查看博客:[详细介绍](https://acking-you.github.io/posts/%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BD%E6%97%B6%E9%97%B4%E8%BD%AE%E7%94%A8%E4%BA%8E%E8%B8%A2%E5%87%BA%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5/).
 
 * 高性能的MPSC队列,正好和 `one loop per thread` 模型相贴近.[lockfree_queue](./netpoll/util/lockfree_queue.h)
+* 支持异步缓冲域名解析. [resolver](./netpoll/net/resolver.h) [resolver_impl](./netpoll/net/inner/resolver_impl.h)
 * 支持作为守护线程的启动方式(serveAsDaemon),它将返回一个 `future` 用于同步,这在客户端编程中可能很有用.
 * 支持优雅的捕获相关信号做优雅退出处理,比如下列代码:
   ```cpp
