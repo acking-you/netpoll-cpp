@@ -1,3 +1,4 @@
+#pragma once
 #include <netpoll/core.h>
 
 #include "http_request.h"

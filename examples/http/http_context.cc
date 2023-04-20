@@ -1,5 +1,7 @@
 #include "http_context.h"
 
+#include <string_view>
+
 using StrView = netpoll::StringView;
 
 bool http::Context::processRequestLine(const netpoll::StringView &text)
@@ -8,7 +10,7 @@ bool http::Context::processRequestLine(const netpoll::StringView &text)
    // set method
    size_t  next = sv.find(' ');
    if (next == std::string::npos) return false;
-   if (auto method = Request::MethodMapping({sv.begin(), next});
+   if (auto method = Request::MethodMapping({text.data(), next});
        method != Method::kInvalid)
    {
       request_.method() = method;
@@ -17,23 +19,23 @@ bool http::Context::processRequestLine(const netpoll::StringView &text)
 
    // set path&query
    if (sv.size() < next + 1) return false;
-   sv   = StrView{sv.begin() + next + 1, sv.size() - next - 1};
+   sv   = StrView{sv.data() + next + 1, sv.size() - next - 1};
    next = sv.find(' ');
    if (next == std::string::npos) return false;
-   auto path     = StrView{sv.begin(), next};
+   auto path     = StrView{sv.data(), next};
    auto tmp_next = path.find('?');
    if (tmp_next != std::string::npos)
    {
-      request_.query() =
-        StrView{path.begin() + tmp_next + 1, path.size() - tmp_next - 1};
-      path = StrView{path.begin(), tmp_next};
+      request_.query() = {path.data() + tmp_next + 1,
+                          path.size() - tmp_next - 1};
+      path             = StrView{path.data(), tmp_next};
    }
-   request_.path() = path;
+   request_.path() = {path.data(), path.size()};
 
    // set version
    if (sv.size() < next + 1) return false;
-   sv = StrView{sv.begin() + next + 1, sv.size() - next - 1};
-   if (StrView{sv.begin(), sv.size() - 1} != "HTTP/1.") return false;
+   sv = StrView{sv.data() + next + 1, sv.size() - next - 1};
+   if (StrView{sv.data(), sv.size() - 1} != "HTTP/1.") return false;
    switch (sv.back())
    {
       case '0': request_.version() = Version::kHttp10; return true;
