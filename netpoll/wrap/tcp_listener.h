@@ -39,10 +39,7 @@ public:
     *
     * @param timeout
     */
-   void enableKickoffIdle(size_t timeout)
-   {
-      TcpServer::kickoffIdleConnections(timeout);
-   }
+   void enableKickoffIdle(size_t timeout) { m_idleTimeout = timeout; }
 
    template <
      typename T, typename... Args,
@@ -157,6 +154,13 @@ public:
            data->onWriteComplete(conn, buffer);
         });
       m_bind = data;
+   }
+
+   // Gets the singleton object
+   template <typename T>
+   std::shared_ptr<T> instance()
+   {
+      return std::static_pointer_cast<T>(m_bind);
    }
 
 private:

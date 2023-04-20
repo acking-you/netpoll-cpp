@@ -67,7 +67,7 @@ std::wstring toWidePath(const std::string &strUtf8Path);
 
 // Helpers for multi-platform development
 // OS dependent
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 /**
  * @details Convert an UTF-8 path to a native path.
  *

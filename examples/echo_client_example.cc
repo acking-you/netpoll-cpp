@@ -27,6 +27,7 @@ struct client
 
 int main()
 {
+   elog::GlobalConfig::Get().setLevel(elog::kTrace);
    auto loop   = netpoll::NewEventLoop(1);
    auto dialer = netpoll::tcp::Dialer::New({"127.0.0.1", 6666});
    dialer->bind<client>();

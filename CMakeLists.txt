@@ -47,8 +47,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} elog)
 
 
-option(BUILD_TEST "BUILD_TEST" ON)
-option(BUILD_EXAMPLE "BUILD_EXAMPLE" ON)
+option(BUILD_TEST "BUILD_TEST" OFF)
+option(BUILD_EXAMPLE "BUILD_EXAMPLE" OFF)
 
 if (BUILD_TEST)
     message(STATUS "Start BUILD_TEST")

@@ -191,7 +191,7 @@ TimerQueue::~TimerQueue()
 TimerId TimerQueue::addTimer(const TimerCallback &cb, const TimePoint &when,
                              const TimeInterval &interval, bool h, bool l)
 {
-   assert(h != true && l != true);
+   assert(h == false || l == false);
    auto *timerPtr = new Timer(cb, when, interval, h, l);
 
    m_loop->runInLoop(
@@ -202,7 +202,7 @@ TimerId TimerQueue::addTimer(const TimerCallback &cb, const TimePoint &when,
 TimerId TimerQueue::addTimer(TimerCallback &&cb, const TimePoint &when,
                              const TimeInterval &interval, bool h, bool l)
 {
-   assert(h != true && l != true);
+   assert(h == false || l == false);
    auto *timerPtr = new Timer(std::move(cb), when, interval, h, l);
 
    m_loop->runInLoop(

@@ -1,3 +1,5 @@
+add_subdirectory(http)
+
 file(GLOB SINGLE_FILES
         "${PROJECT_SOURCE_DIR}/examples/*_example.cc"
         )

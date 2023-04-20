@@ -92,6 +92,12 @@ public:
       m_bind = data;
    }
 
+   // Gets the singleton object
+   template <typename T>
+   std::shared_ptr<T> instance()
+   {
+      return std::static_pointer_cast<T>(m_bind);
+   }
 #else
    template <typename T>
    void bindOnMessage()
@@ -142,7 +148,6 @@ public:
       }
       else { std::cerr << "Please register the type first!"; }
    }
-
 #endif
 
 private:
