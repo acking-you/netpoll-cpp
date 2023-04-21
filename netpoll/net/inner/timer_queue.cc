@@ -4,6 +4,7 @@
 #include <netpoll/net/eventloop.h>
 #include <netpoll/util/move_wrapper.h>
 #ifdef __linux__
+#define ENABLE_ELG_LOG
 #include <elog/logger.h>
 #include <sys/timerfd.h>
 #endif
@@ -20,7 +21,7 @@ using namespace std::chrono_literals;
 static int createTimerfd()
 {
    int timerfd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
-   if (timerfd < 0) { Log::error(loc::current(), "create timerfd failed!"); }
+   if (timerfd < 0) { ELG_ERROR("create timerfd failed!"); }
    return timerfd;
 }
 
@@ -45,7 +46,7 @@ static void resetTimerfd(int timerfd, const TimePoint &expiration)
    memset(&oldValue, 0, sizeof(oldValue));
    newValue.it_value = howMuchTimeFromNow(expiration);
    int ret           = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
-   if (ret) { Log::error(loc::current(), "timerfd_settime()"); }
+   if (ret) { ELG_ERROR("timerfd_settime()"); }
 }
 
 static void readTimerfd(int timerfd)
@@ -54,8 +55,7 @@ static void readTimerfd(int timerfd)
    ssize_t  n = ::read(timerfd, &howmany, sizeof howmany);
    if (n != sizeof howmany)
    {
-      Log::error(loc::current(),
-                 "TimerQueue::handleRead() reads {} bytes instead of 8", n);
+      ELG_ERROR("TimerQueue::handleRead() reads {} bytes instead of 8", n);
    }
 }
 
@@ -213,15 +213,12 @@ TimerId TimerQueue::addTimer(TimerCallback &&cb, const TimePoint &when,
 void TimerQueue::addTimerInLoop(TimerPtr &&timer)
 {
    m_loop->assertInLoopThread();
-   m_timerIdSet.insert(timer->id());
-   if (insert(std::move(timer)))
-   {
-// the earliest timer changed
 #ifdef __linux__
-      auto when = timer->when();
-      resetTimerfd(m_timerFd, when);
+   auto when = timer->when();
 #endif
-   }
+   // the earliest timer changed
+   m_timerIdSet.insert(timer->id());
+   if (insert(std::move(timer))) { resetTimerfd(m_timerFd, when); }
 }
 
 void TimerQueue::cancelTimer(TimerId id)

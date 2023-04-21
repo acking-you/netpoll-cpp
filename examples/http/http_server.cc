@@ -62,9 +62,7 @@ private:
 
 int main()
 {
-   elog::GlobalConfig::Get()
-     .setLevel(elog::kTrace)
-     .setFormatter(elog::formatter::colorfulFormatter);
+   elog::GlobalConfig::Get().setFormatter(elog::formatter::colorfulFormatter);
    auto loop     = netpoll::NewEventLoop();
    auto listener = netpoll::tcp::Listener::New({1314});
 
