@@ -63,8 +63,9 @@ private:
    std::shared_ptr<EventLoopThreadPool> m_pool;
 };
 
-inline EventLoopWrap NewEventLoop(size_t                     threadNum = 2,
-                                  const netpoll::StringView &name = "eventloop")
+inline EventLoopWrap NewEventLoop(
+  size_t threadNum                = std::thread::hardware_concurrency() * 2 - 1,
+  const netpoll::StringView &name = "eventloop")
 {
    return EventLoopWrap::New(threadNum, name);
 }
