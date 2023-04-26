@@ -1,4 +1,6 @@
-## netpoll-cpp
+# netpoll-cpp
+
+## 特性
 
 这是一个兼顾性能和易用性的 `C++ NIO` 网络库,采用与 `muduo` 网络库类似的 `one loop per thread` 模型进行封装.
 
@@ -8,7 +10,7 @@
 * 性能极高,暂时测试了[asio](https://www.boost.org/doc/libs/1_82_0/doc/html/boost_asio.html)(
   C++)/[netty](https://netty.io/wiki/index.html)(
   java)/[netpoll](https://www.cloudwego.io/zh/docs/netpoll/)(go语言)
-  在作为echo服务器的表现上延迟达到最低.
+  在作为echo服务器的表现上延迟达到最低.具体的测试结果可以查看:[bench_echo](https://github.com/ACking-you/bench_echo)
 * 文件的发送结合了 `EventLoop` 实现异步调用,如果所在操作系统支持 `sendfile` 调用,则会调用该零拷贝调用而不是调用C标准库.
 * 易用性超高,比如想要写一个 `echo` 服务器,只需要下面的代码:
   ```cpp

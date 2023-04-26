@@ -135,9 +135,7 @@ public:
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setConnectionCallback(
-        [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
-           data->onConnection(conn, buffer);
-        });
+        [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       m_bind = data;
    }
 
@@ -150,9 +148,7 @@ public:
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setWriteCompleteCallback(
-        [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
-           data->onWriteComplete(conn, buffer);
-        });
+        [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
    }
 

@@ -1,3 +1,4 @@
+add_subdirectory(chat)
 add_subdirectory(http)
 
 file(GLOB SINGLE_FILES

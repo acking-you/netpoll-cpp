@@ -1,3 +1,4 @@
+#define ENABLE_ELG_LOG
 #include <elog/logger.h>
 #include <netpoll/util/concurrent_task_queue.h>
 using namespace elog;
@@ -25,7 +26,7 @@ void netpoll::ConcurrentTaskQueue::queueFunc(size_t num)
          while (!m_stop && m_que.empty()) { m_cv.wait(lock); }
          if (!m_que.empty())
          {
-            Log::trace("thread:{} got a new task", tmpName);
+            ELG_TRACE("thread:{} got a new task", tmpName);
             cb = std::move(m_que.front());
             m_que.pop();
          }

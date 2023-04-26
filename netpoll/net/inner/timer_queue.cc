@@ -218,7 +218,9 @@ void TimerQueue::addTimerInLoop(TimerPtr &&timer)
 #endif
    // the earliest timer changed
    m_timerIdSet.insert(timer->id());
+#ifdef __linux__
    if (insert(std::move(timer))) { resetTimerfd(m_timerFd, when); }
+#endif
 }
 
 void TimerQueue::cancelTimer(TimerId id)

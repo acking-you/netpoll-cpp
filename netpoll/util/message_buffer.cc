@@ -110,21 +110,24 @@ void MessageBuffer::pushFrontInt64(uint64_t l)
 uint16_t MessageBuffer::peekInt16() const
 {
    assert(readableBytes() >= 2);
-   uint16_t rs = *(static_cast<const uint16_t *>((void *)peek()));
+   uint16_t rs;
+   ::memcpy(&rs, peek(), sizeof rs);
    return ntohs(rs);
 }
 
 uint32_t MessageBuffer::peekInt32() const
 {
    assert(readableBytes() >= 4);
-   uint32_t rl = *(static_cast<const uint32_t *>((void *)peek()));
+   uint32_t rl;
+   ::memcpy(&rl, peek(), sizeof rl);
    return ntohl(rl);
 }
 
 uint64_t MessageBuffer::peekInt64() const
 {
    assert(readableBytes() >= 8);
-   uint64_t rll = *(static_cast<const uint64_t *>((void *)peek()));
+   uint64_t rll;
+   ::memcpy(&rll, peek(), sizeof rll);
    return ntoh64(rll);
 }
 
