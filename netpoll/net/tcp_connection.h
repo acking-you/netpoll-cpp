@@ -55,9 +55,10 @@ public:
     * @warning The buffer size should be >= 10 to allow http chunked-encoding
     * data stream
     */
-   virtual void sendStream(std::function<std::size_t(char *, std::size_t)>
-                             callback) = 0;   // (buffer, buffer size) -> size
-                                              // of data put in buffer
+   // (buffer, buffer size) -> size
+   // of data put in buffer
+   virtual void sendStream(
+     std::function<std::size_t(char *, std::size_t)> callback) = 0;
 
    /**
     * @brief New the local address of the connection.

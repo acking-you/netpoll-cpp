@@ -11,6 +11,7 @@ EventLoopThreadPool::EventLoopThreadPool(size_t            threadNum,
       m_loopThreadList.emplace_back(std::make_unique<EventLoopThread>(name));
    }
 }
+
 void EventLoopThreadPool::start()
 {
    for (auto &i : m_loopThreadList) { i->run(); }

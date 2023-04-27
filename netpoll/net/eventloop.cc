@@ -58,7 +58,7 @@ EventLoop::EventLoop()
    if (t_loopInThisThread)
    {
       ELG_ERROR("There is already an EventLoop in this thread");
-      exit(-1);
+      abort();
    }
    t_loopInThisThread = this;
 #ifdef __linux__
@@ -125,12 +125,14 @@ EventLoop *EventLoop::getEventLoopOfCurrentThread()
 {
    return t_loopInThisThread;
 }
+
 void EventLoop::updateChannel(Channel *channel)
 {
    assert(channel->ownerLoop() == this);
    assertInLoopThread();
    m_poller->updateChannel(channel);
 }
+
 void EventLoop::removeChannel(Channel *channel)
 {
    assert(channel->ownerLoop() == this);
@@ -201,12 +203,14 @@ void EventLoop::loop()
       std::rethrow_exception(loopException);
    }
 }
+
 void EventLoop::abortNotInLoopThread()
 {
    ELG_ERROR(
      "It is forbidden to run loop on threads other than event-loop thread");
    abort();
 }
+
 void EventLoop::queueInLoop(const Functor &cb)
 {
    m_funcs.enqueue(cb);
@@ -215,6 +219,7 @@ void EventLoop::queueInLoop(const Functor &cb)
       wakeup();
    }
 }
+
 void EventLoop::queueInLoop(Functor &&cb)
 {
    m_funcs.enqueue(std::move(cb));
@@ -236,6 +241,7 @@ TimerId EventLoop::runAt(const Timestamp &time, const TimerCallback &cb, bool h,
      std::chrono::steady_clock::now() + std::chrono::microseconds(microSeconds);
    return m_timerQueue->addTimer(cb, tp, std::chrono::microseconds(0), h, l);
 }
+
 TimerId EventLoop::runAt(const Timestamp &time, TimerCallback &&cb, bool h,
                          bool l)
 {
@@ -246,15 +252,18 @@ TimerId EventLoop::runAt(const Timestamp &time, TimerCallback &&cb, bool h,
    return m_timerQueue->addTimer(std::move(cb), tp,
                                  std::chrono::microseconds(0), h, l);
 }
+
 TimerId EventLoop::runAfter(double delay, const TimerCallback &cb, bool h,
                             bool l)
 {
    return runAt(Timestamp::now() + delay, cb, h, l);
 }
+
 TimerId EventLoop::runAfter(double delay, TimerCallback &&cb, bool h, bool l)
 {
    return runAt(Timestamp::now() + delay, std::move(cb), h, l);
 }
+
 TimerId EventLoop::runEvery(double interval, const TimerCallback &cb, bool h,
                             bool l)
 {
@@ -264,6 +273,7 @@ TimerId EventLoop::runEvery(double interval, const TimerCallback &cb, bool h,
    auto tp = std::chrono::steady_clock::now() + dur;
    return m_timerQueue->addTimer(cb, tp, dur, h, l);
 }
+
 TimerId EventLoop::runEvery(double interval, TimerCallback &&cb, bool h, bool l)
 {
    std::chrono::microseconds dur(static_cast<std::chrono::microseconds::rep>(
@@ -272,10 +282,12 @@ TimerId EventLoop::runEvery(double interval, TimerCallback &&cb, bool h, bool l)
    auto tp = std::chrono::steady_clock::now() + dur;
    return m_timerQueue->addTimer(std::move(cb), tp, dur, h, l);
 }
+
 void EventLoop::cancelTimer(TimerId id)
 {
    if (isRunning() && m_timerQueue) m_timerQueue->cancelTimer(id);
 }
+
 void EventLoop::doRunInLoopFuncs()
 {
    m_callingFuncs = true;
@@ -295,6 +307,7 @@ void EventLoop::doRunInLoopFuncs()
       }
    }
 }
+
 void EventLoop::wakeup()
 {
    // TODO check ret?

@@ -35,7 +35,7 @@ std::vector<std::string> getAllFilenamesByBaseDir(std::string const &targetDir)
 void ResponseFilesLink(http::Response &rsp)
 {
    std::string links;
-   for (auto &&filename : getAllFilenamesByBaseDir(BASE_FILES_PATH))
+   for (auto &&filename : getAllFilenamesByBaseDir(current_path().string()))
    {
       links.append(
         fmt::format(R"(<li><a href="/?{}">{}</a></li>)", filename, filename));
@@ -48,7 +48,7 @@ void ResponseFilesLink(http::Response &rsp)
 
 void ResponseFile(const std::string &filename, http::Response &rsp)
 {
-   auto filePath = path(BASE_FILES_PATH);
+   auto filePath = current_path();
    filePath /= filename;
    if (!exists(filePath))
    {

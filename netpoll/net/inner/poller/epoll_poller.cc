@@ -63,6 +63,7 @@ void EpollPoller::postEvent(uint64_t event)
    epoll_post_signal(m_epollFd, event);
 }
 #endif
+
 void EpollPoller::poll(int timeoutMs, ChannelList *activeChannels)
 {
    int numEvents  = ::epoll_wait(m_epollFd, &*m_events.begin(),

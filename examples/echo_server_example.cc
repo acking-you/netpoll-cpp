@@ -5,7 +5,10 @@ using namespace netpoll;
 
 struct test_server
 {
-   NETPOLL_TCP_MESSAGE(conn, buffer) { conn->send(buffer->readAll()); }
+   NETPOLL_TCP_MESSAGE(conn, buffer)
+   {
+      conn->setHighWaterMarkCallback() conn->send(buffer->readAll());
+   }
 };
 
 int main()
