@@ -17,6 +17,6 @@ int main()
 	auto loop = NewEventLoop();
 	auto listener = tcp::Listener::New({ 6666 });
 	//   listener->enableKickoffIdle(60);
-	listener->bind<test_server>();
+	listener->bind<server>();
 	loop.serve(listener);
 }
