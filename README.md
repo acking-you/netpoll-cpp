@@ -320,7 +320,7 @@ EventLoop相关的API如下:
 
 #### MessageBuffer
 
-MessageBuffer是用于读写内核缓冲区数据的中间缓存,其实就是一个可变的缓冲区,实现起来也很比较简单,关于不同种类的缓冲区实现可以看看我的这篇文章:[可变长与不可变长buffer的实现]()
+MessageBuffer是用于读写内核缓冲区数据的中间缓存,其实就是一个可变的缓冲区,实现起来也很比较简单,关于不同种类的缓冲区实现可以看看我的这篇文章:[可变长与不可变长buffer的实现](https://acking-you.github.io/posts/lab0-%E5%AE%9E%E7%8E%B0bytestream/)
 
 这里就不对各种调用进行描述了,想要了解的可以直接看对应的头文件: [netpoll/util/message_buffer.h](netpoll/util/message_buffer.h) .
 
