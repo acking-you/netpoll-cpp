@@ -1,4 +1,4 @@
-#include "Socket.h"
+#include "socket.h"
 #define ENABLE_ELG_LOG
 #include <elog/logger.h>
 #include <sys/types.h>

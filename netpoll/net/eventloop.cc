@@ -13,7 +13,7 @@
 #ifdef _WIN32
 #include <windows.h>
 using ssize_t = long long;
-#else
+#elif defined(__linux__)
 #include <poll.h>
 #endif
 #ifdef __linux__
@@ -117,8 +117,8 @@ EventLoop::~EventLoop()
    close(m_wakeupFd);
 #elif defined _WIN32
 #else
-   close(wakeupFd_[0]);
-   close(wakeupFd_[1]);
+   close(m_wakeupFd[0]);
+   close(m_wakeupFd[1]);
 #endif
 }
 EventLoop *EventLoop::getEventLoopOfCurrentThread()

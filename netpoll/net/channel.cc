@@ -1,6 +1,6 @@
 #include "channel.h"
 
-#include <netpoll/net/eventLoop.h>
+#include <netpoll/net/eventloop.h>
 #ifdef _WIN32
 #include "dependencies/wepoll/wepoll.h"
 #define POLLIN   EPOLLIN

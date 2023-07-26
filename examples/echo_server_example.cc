@@ -13,7 +13,7 @@ struct server
 
 int main()
 {
-	elog::GlobalConfig::Get().setLevel(elog::kTrace);
+	elog::GlobalConfig::Get().setLevel(elog::kTrace).setFormatter(elog::formatter::colorfulFormatter);
 	auto loop = NewEventLoop();
 	auto listener = tcp::Listener::New({ 6666 });
 	//   listener->enableKickoffIdle(60);

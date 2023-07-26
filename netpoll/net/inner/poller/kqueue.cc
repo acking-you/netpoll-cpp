@@ -6,8 +6,6 @@
 #include <poll.h>
 #include <sys/event.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <trantor/utils/Logger.h>
 #include <unistd.h>
 using namespace elog;
 #endif
@@ -44,11 +42,11 @@ void KQueue::resetAfterFork()
 
 void KQueue::poll(int timeoutMs, ChannelList *activeChannels)
 {
-   struct timespec timeout;
+   timespec timeout{};
    timeout.tv_sec  = timeoutMs / 1000;
    timeout.tv_nsec = (timeoutMs % 1000) * 1000000;
 
-   int numEvents  = kevent(kqfd_, NULL, 0, events_.data(),
+   int numEvents  = kevent(kqfd_, nullptr, 0, events_.data(),
                            static_cast<int>(events_.size()), &timeout);
    int savedErrno = errno;
    if (numEvents > 0)
@@ -72,7 +70,6 @@ void KQueue::poll(int timeoutMs, ChannelList *activeChannels)
          Log::error("KQueue::poll()");
       }
    }
-   return;
 }
 
 void KQueue::fillActiveChannels(int          numEvents,
@@ -81,7 +78,7 @@ void KQueue::fillActiveChannels(int          numEvents,
    assert(static_cast<size_t>(numEvents) <= events_.size());
    for (int i = 0; i < numEvents; ++i)
    {
-      Channel *channel = static_cast<Channel *>(events_[i].udata);
+      auto *channel = static_cast<Channel *>(events_[i].udata);
       assert(channels_.find(channel->fd()) != channels_.end());
       int events = events_[i].filter;
       if (events == EVFILT_READ) { channel->setRevents(POLLIN); }
@@ -183,7 +180,7 @@ void KQueue::update(Channel *channel)
       EV_SET(&ev[n++], fd, EVFILT_WRITE, EV_DELETE, 0, 0,
              (void *)(intptr_t)channel);
    }
-   kevent(kqfd_, ev, n, NULL, 0, NULL);
+   kevent(kqfd_, ev, n, nullptr, 0, nullptr);
 }
 #else
 KQueue::KQueue(EventLoop *loop) : Poller(loop) { assert(false); }

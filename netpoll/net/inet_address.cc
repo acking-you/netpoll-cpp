@@ -207,14 +207,14 @@ const uint32_t *InetAddress::ip6NetEndian() const
 #if defined __linux__ || defined __HAIKU__
    return m_addr6.sin6_addr.s6_addr32;
 #elif defined __sun
-   return addr6_.sin6_addr._S6_un._S6_u32;
+   return m_addr6.sin6_addr._S6_un._S6_u32;
 #elif defined _WIN32
    // TODO is this OK ?
    const struct in6_addr_uint *addr_temp =
      reinterpret_cast<const struct in6_addr_uint *>(&m_addr6.sin6_addr);
    return (*addr_temp).uext.__s6_addr32;
 #else
-   return addr6_.sin6_addr.__u6_addr.__u6_addr32;
+   return m_addr6.sin6_addr.__u6_addr.__u6_addr32;
 #endif
 }
 uint16_t InetAddress::toPort() const { return ntohs(portNetEndian()); }

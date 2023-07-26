@@ -294,7 +294,7 @@ private:
    void        wakeup();
    bool        isEventHandling() const { return m_eventHandling; }
 
-#ifdef __linux__
+#if defined(__linux__) || !defined(_WIN32)
    void wakeupRead() const;
 #endif
    void doRunInLoopFuncs();
