@@ -17,17 +17,20 @@
          value = std::is_same<decltype(Check<T>(0)), std::true_type>::value    \
       };                                                                       \
    };
-
+/// Call timing: After the connection is established.
 #define NETPOLL_TCP_MESSAGE(conn, buffer)                                      \
    void onMessage(const netpoll::TcpConnectionPtr &conn,                       \
                   const netpoll::MessageBuffer    *buffer)
 
+/// Call timing: When connection is connected or disconnected.
 #define NETPOLL_TCP_CONNECTION(conn)                                           \
    void onConnection(const netpoll::TcpConnectionPtr &conn)
 
+/// Call timing: When the message of the send queue is finished.
 #define NETPOLL_TCP_WRITE_COMPLETE(conn)                                       \
    void onWriteComplete(const netpoll::TcpConnectionPtr &conn)
 
+/// note: Only called when error generate by `connect`.No effect in a server app.
 #define NETPOLL_TCP_CONNECTION_ERROR() void onConnectionError()
 
 namespace netpoll {
