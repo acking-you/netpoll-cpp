@@ -36,11 +36,11 @@ public:
       return EventLoopWrap{threadNum, name};
    }
 
-   void serve(tcp::ListenerPtr &listener);
+   void serve(tcp::Listener &listener);
 
-   void serve(tcp::DialerPtr &dialer);
+   void serve(tcp::Dialer &dialer);
 
-   void serve(const std::vector<tcp::DialerPtr> &dialers);
+   void serve(const std::vector<tcp::Dialer> &dialers);
 
    template <typename T>
    std::future<void> serveAsDaemon(T &src)

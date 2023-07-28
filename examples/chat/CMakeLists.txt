@@ -1,5 +1,3 @@
-set(CMAKE_EXE_LINKER_FLAGS "-static")
-
 add_executable(chat_server_example chat_server.cc context.cc)
 
 target_link_libraries(chat_server_example netpoll)

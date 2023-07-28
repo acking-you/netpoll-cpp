@@ -279,8 +279,8 @@ public:
     *
     * @note You must be clear that the order in which it is executed is secure
     */
-   const Any &getContext() { return m_context; }
-   Any       &getMutableContext() { return m_context; }
+   const Any &getContextRef() { return m_context; }
+   Any       &getContextRefMut() { return m_context; }
    /**
     * @brief Set a context
     * @param ctx the context to set

@@ -24,7 +24,7 @@ void netpoll::QuitAllEventLoop()
    for (auto&& loop : EventLoopWrap::allEventLoop()) { loop->quit(); }
 }
 
-void EventLoopWrap::serve(tcp::ListenerPtr& listener)
+void EventLoopWrap::serve(tcp::Listener& listener)
 {
    if (m_quit)
    {
@@ -32,26 +32,26 @@ void EventLoopWrap::serve(tcp::ListenerPtr& listener)
       for (size_t i = 0; i < m_pool->size(); ++i)
          allEventLoop().push_back(m_pool->getLoop(i));
    }
-   listener->setIoLoopThreadPool(m_pool);
-   listener->setLoop(getEventLoop());
-   listener->start();
-   listener->getLoop()->loop();
+   listener.setIoLoopThreadPool(m_pool);
+   listener.setLoop(getEventLoop());
+   listener.start();
+   listener.getLoop()->loop();
 }
 
-void EventLoopWrap::serve(tcp::DialerPtr& dialer)
+void EventLoopWrap::serve(tcp::Dialer& dialer)
 {
    if (m_quit)
    {
       for (size_t i = 0; i < m_pool->size(); ++i)
          allEventLoop().push_back(m_pool->getLoop(i));
    }
-   dialer->setLoop(m_pool->getNextLoop());
-   dialer->connect();
+   dialer.setLoop(m_pool->getNextLoop());
+   dialer.connect();
    m_pool->start();
    m_pool->wait();
 }
 
-void EventLoopWrap::serve(const std::vector<tcp::DialerPtr>& dialers)
+void EventLoopWrap::serve(const std::vector<tcp::Dialer>& dialers)
 {
    if (m_quit)
    {
@@ -60,8 +60,8 @@ void EventLoopWrap::serve(const std::vector<tcp::DialerPtr>& dialers)
    }
    for (auto&& dialer : dialers)
    {
-      dialer->setLoop(m_pool->getNextLoop());
-      dialer->connect();
+      dialer.setLoop(m_pool->getNextLoop());
+      dialer.connect();
    }
    m_pool->start();
    m_pool->wait();

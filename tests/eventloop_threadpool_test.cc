@@ -22,7 +22,7 @@ TEST_CASE("test EventLoopThreadPool")
          auto* loop = threadPool.getNextLoop();
          loop->setContext(0);
          loop->runEvery(1, [loop, i](auto timerId) {
-            auto& ctx   = loop->getMutableContext();
+            auto& ctx   = loop->getContextRefMut();
             auto& count = any_cast<int&>(ctx);
             if (count == 2)
             {
@@ -46,7 +46,7 @@ TEST_CASE("test EventLoopThreadPool")
       {
          loop->setContext(0);
          loop->runEvery(1, [loop](auto timerId) {
-            auto& ctx   = loop->getMutableContext();
+            auto& ctx   = loop->getContextRefMut();
             auto& count = any_cast<int&>(ctx);
             if (count == 2)
             {
@@ -76,7 +76,7 @@ TEST_CASE("test EventLoopThreadPool")
       auto* loop      = threadPool.getLoop(0);
       loop->setContext(0);
       loop->runEvery(1, [&](auto timerId) {
-         auto& ctx   = loop->getMutableContext();
+         auto& ctx   = loop->getContextRefMut();
          auto& count = any_cast<int&>(ctx);
          if (count == 2)
          {

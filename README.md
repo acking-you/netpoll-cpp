@@ -174,7 +174,7 @@ int main()
    elog::GlobalConfig::Get().setLevel(elog::kTrace);
    auto loop     = NewEventLoop();
    auto listener = tcp::Listener::New({6666});
-   listener->bind<test_server>();
+   listener.bind<test_server>();
    loop.serve(listener);
 }
 ```
@@ -214,12 +214,11 @@ int main()
    elog::GlobalConfig::Get().setLevel(elog::kTrace);
    auto loop   = netpoll::NewEventLoop(1);
    auto dialer = netpoll::tcp::Dialer::New({"127.0.0.1", 6666});
-   dialer->bind<client>();
+   dialer.bind<client>();
 #if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
 #else
    netpoll::tcp::Dialer::Register<client>();
-   dialer->bindOnMessage<client>();
-   dialer->bindOnConnection<client>();
+   dialer.bindOnMessage<client>().bindOnConnection<client>();
 #endif
    loop.serve(dialer);
 }
@@ -263,7 +262,7 @@ namespace netpoll::tcp{
         template <typename T>
 		std::shared_ptr<T> instance() // 返回内部帮你创建的实例
         
-        static ListenerPtr New(const InetAddress &address,
+        static Listener New(const InetAddress &address,
                                  const StringView  &name = "tcp_listener",
                                  bool reUseAddr = true, bool reUsePort = true); // 建立Listener实例
         
@@ -285,7 +284,7 @@ namespace netpoll::tcp{
         template <typename T>
 		std::shared_ptr<T> instance() // 返回内部帮你创建的实例
         
-        static ListenerPtr New(const InetAddress &address,
+        static Dialer New(const InetAddress &address,
                                  const StringView  &name = "tcp_dialer"); // 建立Listener实例
         
         void enableRetry(); // 在连接失败后重试
@@ -527,14 +526,14 @@ TcpConnection类是一个抽象类,在使用时都是通过智能指针来使用
       *
       * @return Any
       */
-     Any &getMutableContext() { return m_context; }
+     Any &getContextRefMut() { return m_context; }
   
      /**
       * @brief New unmutable context
       *
       * @return Any
       */
-     Any const &getContext() const { return m_context; }
+     Any const &getContextRef() const { return m_context; }
   
      /**
       * @brief Return true if the custom data is set by user.

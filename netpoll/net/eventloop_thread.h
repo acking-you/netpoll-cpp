@@ -31,6 +31,8 @@ public:
     * @brief New the pointer of the event loop of the thread.
     *
     * @return EventLoop*
+    * @note Must be notice that the pointer is not thread-safe,and when quit() is called,
+    * it will become a dangling pointer!!!!
     */
    EventLoop *getLoop() const { return m_loop.load(std::memory_order_acquire); }
 

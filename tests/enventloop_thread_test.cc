@@ -5,23 +5,29 @@
 
 using namespace netpoll;
 
-TEST_CASE("test EventLoopThread")
+TEST_SUITE_BEGIN("test EventLoopThread");
+
+TEST_CASE("get mut context and plus one by every 1s")
 {
    netpoll::EventLoopThread thread;
    thread.run();
+   //   Must be notice that the pointer is not thread-safe,and when quit() is
+   //   called,it will become a dangling pointer!!!!
    auto* loop = thread.getLoop();
    loop->setContext(0);
    loop->runEvery(1, [loop](TimerId id) {
-      auto& count    = loop->getMutableContext();
-      auto& countRef = any_cast<int&>(count);
-      if (countRef == 10)
+      auto&& count    = loop->getContextRefMut();
+      auto&  countRef = any_cast<int&>(count);
+      if (countRef == 5)
       {
          loop->cancelTimer(id);
+         REQUIRE_EQ(any_cast<int&>(loop->getContextRefMut()), 5);
          loop->quit();
       }
-      std::cout << "hello EventLoopThread "
-                << "count:" << countRef << std::endl;
+      std::cout << "count:" << countRef << std::endl;
       ++countRef;
    });
    thread.wait();
 }
+
+TEST_SUITE_END;

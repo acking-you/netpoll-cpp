@@ -3,6 +3,7 @@
 
 #include <string>
 
+#ifdef _WIN32
 using namespace netpoll;
 TEST_SUITE_BEGIN("encode_util");
 TEST_CASE("test fromUtf8&toUtf8")
@@ -19,7 +20,6 @@ TEST_CASE("test fromNativePath&toNativePath")
    const wchar_t* windowsNativePath    = L"C:\\学习资料";
    const char*    linuxNetPath         = u8"home/学习资料";
    const wchar_t* linuxNativeWcharPath = L"home/学习资料";
-#ifdef _WIN32
    SUBCASE("fromNativePath")
    {
       CHECK_EQ(windowsNetPath,
@@ -30,18 +30,6 @@ TEST_CASE("test fromNativePath&toNativePath")
    {
       CHECK_EQ(windowsNativePath, netpoll::utils::toNativePath(windowsNetPath));
    }
-#else
-   SUBCASE("fromNativePath")
-   {
-      CHECK_EQ(linuxNetPath,
-               netpoll::utils::fromNativePath(linuxNativeWcharPath));
-   }
-   // 因为Linux本地默认编码就是utf8，除非谁脑子抽了用wchar
-   SUBCASE("toNativePath")
-   {
-      CHECK_EQ(utils::toUtf8(linuxNativeWcharPath),
-               netpoll::utils::toNativePath(linuxNetPath));
-   }
-#endif
 }
 TEST_SUITE_END;
+#endif

@@ -6,36 +6,27 @@
 
 using namespace netpoll;
 
-int s_num = 0;
-
 void testRunEveryAndCancel()
 {
-   elog::GlobalConfig::Get().setFormatter(elog::formatter::colorfulFormatter);
+   elog::GlobalConfig::Get().setFormatter(
+     elog::formatter::customFromString("%c%l%C:%v"));
    EventLoop loop;
    loop.setContext(0);
-   loop.runEvery(1, [l = &loop](TimerId id1) mutable {
-      auto& p   = l->getMutableContext();
-      auto& num = netpoll::any_cast<int&>(p);
-      if (num == s_num) { ELG_INFO("timerId:{},num == s_num", id1); }
-      ELG_INFO("timerId:{} ,num = {},s_num = {}", id1, num, s_num);
-      num++;
-      s_num++;
-
-      if (num == 10)
+   loop.runEvery(1, [&loop](TimerId id) {
+      auto&& count    = loop.getContextRefMut();
+      auto&  countRef = any_cast<int&>(count);
+      if (countRef == 5)
       {
-         l->cancelTimer(id1);
-         l->runEvery(1, [l](TimerId id2) {
-            auto& p   = l->getMutableContext();
-            auto& num = netpoll::any_cast<int&>(p);
-            if (num == s_num) { ELG_INFO("timerId:{},num == s_num", id2); }
-            ELG_INFO("timerId:{} ,num = {},s_num = {}", id2, num, s_num);
-            s_num++;
-            num++;
-            if (num == 20) { l->quit(); }
-         });
+         loop.cancelTimer(id);
+         REQUIRE_EQ(any_cast<int&>(loop.getContextRefMut()), 5);
+         loop.quit();
       }
+      ELG_INFO("count{}", countRef);
+      ++countRef;
    });
    loop.loop();
 }
 
-TEST_CASE("test timer_queue") { testRunEveryAndCancel(); }
+TEST_SUITE("test TimerQueue"){
+    TEST_CASE("runEvery&cancel") { testRunEveryAndCancel(); }
+}

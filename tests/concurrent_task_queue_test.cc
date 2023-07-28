@@ -1,30 +1,60 @@
 #include <doctest/doctest.h>
 #include <netpoll/util/concurrent_task_queue.h>
+#include <netpoll/util/mutex_guard.h>
 
-std::mutex                   s_mtx;
-std::string                  s_text;
 netpoll::ConcurrentTaskQueue s_queue(2, "test append");
 
-void append(const char* text)
+struct appender
 {
-   std::lock_guard<std::mutex> lock(s_mtx);
-   s_text.append(text);
-}
+   void append(const char* text) { text_.append(text); }
+   bool check_value() const
+   {
+      return text_ == "abc" || text_ == "acb" || text_ == "bac" ||
+             text_ == "bca" || text_ == "cab" || text_ == "cba";
+   }
+   std::string text_;
+};
 
-bool check_value()
-{
-   return s_text == "abc" || s_text == "acb" || s_text == "bac" ||
-          s_text == "bca" || s_text == "cab" || s_text == "cba";
-}
+TEST_SUITE_BEGIN("test ConcurrentTaskQueue");
 
 TEST_CASE("test ConcurrentTaskQueue")
 {
-   std::thread th1([&]() { s_queue.syncTask([]() { append("a"); }); });
-   std::thread th2([&]() { s_queue.syncTask([]() { append("b"); }); });
-   std::thread th3([&]() { s_queue.syncTask([]() { append("c"); }); });
+   netpoll::Mutex<appender> app;
+   std::thread              th1([&]() {
+      s_queue.syncTask([&]() { app.into_guard().ref_data_mut().append("a"); });
+   });
+   std::thread              th2([&]() {
+      s_queue.syncTask([&]() { app.into_guard().ref_data_mut().append("b"); });
+   });
+   std::thread              th3([&]() {
+      s_queue.syncTask([&]() { app.into_guard().ref_data_mut().append("c"); });
+   });
    th1.join();
    th2.join();
    th3.join();
 
-   CHECK(check_value());
+   REQUIRE(app.into_guard().ref_data().check_value());
 }
+
+struct Adder
+{
+   void add()
+   {
+      for (int i = 0; i < 10; i++) count += 10;
+   }
+   int count = 0;
+};
+
+TEST_CASE("test Mutex=>Guard is thread safe")
+{
+   netpoll::Mutex<Adder> app;
+   std::thread           th1([&]() { app.into_guard().ref_data_mut().add(); });
+   std::thread           th2([&]() { app.into_guard().ref_data_mut().add(); });
+   std::thread           th3([&]() { app.into_guard().ref_data_mut().add(); });
+   th1.join();
+   th2.join();
+   th3.join();
+   REQUIRE_EQ(app.into_guard().ref_data().count, 300);
+}
+
+TEST_SUITE_END;

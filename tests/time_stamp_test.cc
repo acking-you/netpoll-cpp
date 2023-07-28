@@ -11,8 +11,8 @@ auto test_toString()
    auto ms  = Timestamp::now().toFormatString(Time::Milliseconds);
    auto s   = Timestamp::now().toFormatString();
    auto str = Timestamp::now().toString(Time::Seconds);
-   Log::info("s:{},ms:{},us:{}", s, ms, us);
-   Log::info("{}", str);
+   Log::info(R"(Time=> s:"{}",ms:"{}",us:"{}")", s, ms, us);
+   Log::info("Timestamp=> {}", str);
 }
 
 auto test_operator()
@@ -21,11 +21,14 @@ auto test_operator()
    auto tm2 = Timestamp::now();
    auto t   = tm2 - tm1;
    auto tt  = tm1 + t;
-   Log::info("t:{} tt:{}", t, tt.sinceEpoch<Time::Seconds>());
+   Log::info("Duration=> {}", t);
+   Log::info("Timestamp=> after operator plus:{},",
+             tt.sinceEpoch<Time::Seconds>());
 }
 
 TEST_CASE("test Timestamp")
 {
+   GlobalConfig::Get().setFormatter(formatter::customFromString("%v"));
    test_toString();
    test_operator();
 }

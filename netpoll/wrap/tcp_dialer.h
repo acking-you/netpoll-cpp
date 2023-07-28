@@ -11,8 +11,8 @@ namespace tcp {
 class Dialer : noncopyable
 {
 private:
-   void setLoop(EventLoop *loop) { m_client->setLoop(loop); }
-   void connect() { m_client->connect(); }
+   void setLoop(EventLoop *loop) const { m_client->setLoop(loop); }
+   void connect() const { m_client->connect(); }
 
 public:
    explicit Dialer(const InetAddress &serverAddr,
@@ -22,39 +22,50 @@ public:
    }
 
    static auto New(const InetAddress &serverAddr,
-                   const StringView  &nameArg = "tcp_dialer") -> DialerPtr
+                   const StringView  &nameArg = "tcp_dialer") -> Dialer
    {
-      return std::make_shared<Dialer>(serverAddr, nameArg);
+      return Dialer{serverAddr, nameArg};
    }
 
-   void enableRetry() { m_client->enableRetry(); }
+   Dialer &enableRetry()
+   {
+      m_client->enableRetry();
+      return *this;
+   }
 
-   void onMessage(netpoll::RecvMessageCallback const &cb)
+   Dialer &onMessage(netpoll::RecvMessageCallback const &cb)
    {
       m_client->setMessageCallback(cb);
+      return *this;
    }
 
-   void onConnection(netpoll::ConnectionCallback const &cb)
+   Dialer &onConnection(netpoll::ConnectionCallback const &cb)
    {
       m_client->setConnectionCallback(cb);
+      return *this;
    }
 
-   void onConnectionError(netpoll::ConnectionErrorCallback const &cb)
+   Dialer &onConnectionError(netpoll::ConnectionErrorCallback const &cb)
    {
       m_client->setConnectionErrorCallback(cb);
+      return *this;
    }
 
-   void onWriteComplete(netpoll::WriteCompleteCallback const &cb)
+   Dialer &onWriteComplete(netpoll::WriteCompleteCallback const &cb)
    {
       m_client->setWriteCompleteCallback(cb);
+      return *this;
    }
 
+#if __cplusplus < 201703L || (_MSC_VER && _MSVC_LANG < 201703L)
    template <typename T, typename... Args>
    static std::shared_ptr<T> Register(Args &&...args)
    {
       auto instance = std::make_shared<T>(std::forward<Args>(args)...);
       return RegisteredEntity(instance);
    }
+#endif
+
 #if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
 
    template <typename T, typename... Args,
@@ -62,7 +73,7 @@ public:
                trait::has_msg<T>() || trait::has_conn<T>() ||
                  trait::has_conn_error<T>() || trait::has_write_complete<T>(),
                bool>::type = true>
-   void bind(Args &&...args)
+   Dialer &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       if constexpr (trait::has_msg<T>())
@@ -90,6 +101,7 @@ public:
            });
       }
       m_bind = data;
+      return *this;
    }
 
    // Gets the singleton object
@@ -100,7 +112,7 @@ public:
    }
 #else
    template <typename T>
-   void bindOnMessage()
+   Dialer& bindOnMessage()
    {
       auto &data = RegisteredEntity<T>(nullptr);
       if (data)
@@ -111,10 +123,11 @@ public:
            });
       }
       else { std::cerr << "Please register the type first!"; }
+      return *this;
    }
 
    template <typename T>
-   void bindOnConnection()
+   Dialer& bindOnConnection()
    {
       auto &data = RegisteredEntity<T>(nullptr);
       if (data)
@@ -123,10 +136,11 @@ public:
            [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       }
       else { std::cerr << "Please register the type first!"; }
+      return *this;
    }
 
    template <typename T>
-   void bindOnConnectionError()
+   Dialer& bindOnConnectionError()
    {
       auto &data = RegisteredEntity<T>(nullptr);
       if (data)
@@ -135,10 +149,11 @@ public:
            [data]() { data->onConnectionError(); });
       }
       else { std::cerr << "Please register the type first!"; }
+      return *this;
    }
 
    template <typename T>
-   void bindOnWriteComplete()
+   Dialer& bindOnWriteComplete()
    {
       auto &data = RegisteredEntity<T>(nullptr);
       if (data)
@@ -147,6 +162,7 @@ public:
            [data]() { data->onWriteComplete(); });
       }
       else { std::cerr << "Please register the type first!"; }
+      return *this;
    }
 #endif
 

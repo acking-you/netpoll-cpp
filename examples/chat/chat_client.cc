@@ -40,7 +40,7 @@ struct client
                       std::vector<int> const&          idList)
    {
       std::cout << "your id is " << id_ << "\n";
-      std::cout << "please select id which you want to chat:\n";
+      std::cout << "please choose id which you want to chat:\n";
       for (auto&& id : idList) { std::cout << id << " "; }
       std::cout << std::endl;
 
@@ -65,7 +65,9 @@ struct client
       }
       std::cout << "please input your msg:" << std::endl;
       std::string text;
-      std::cin >> text;
+      // absorb '\n'
+      getchar();
+      std::getline(std::cin, text);
       // send to msg
       Context::Send(conn, CommonData{kRequestChat,
                                      ejson::base64_encode(ejson::Parser::ToJSON(
@@ -152,6 +154,6 @@ int main()
 {
    auto loop   = netpoll::NewEventLoop(1);
    auto dialer = netpoll::tcp::Dialer::New({"127.0.0.1", 8080});
-   dialer->bind<chat::client>();
+   dialer.bind<chat::client>();
    loop.serve(dialer);
 }

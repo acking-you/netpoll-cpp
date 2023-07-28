@@ -1,6 +1,7 @@
 #pragma once
 
 #include <netpoll/net/tcp_server.h>
+#include <netpoll/util/mutex_guard.h>
 
 #include <csignal>
 
@@ -11,8 +12,7 @@
 namespace netpoll {
 
 namespace tcp {
-class Listener : private TcpServer,
-                 public std::enable_shared_from_this<Listener>
+class Listener : private TcpServer
 {
 private:
    explicit Listener(const InetAddress &address,
@@ -25,12 +25,11 @@ private:
    void setLoop(EventLoop *loop) { TcpServer::setLoop(loop); }
 
 public:
-   inline static ListenerPtr New(const InetAddress &address,
-                                 const StringView  &name = "tcp_listener",
-                                 bool reUseAddr = true, bool reUsePort = true)
+   inline static Listener New(const InetAddress &address,
+                              const StringView  &name = "tcp_listener",
+                              bool reUseAddr = true, bool reUsePort = true)
    {
-      return std::shared_ptr<Listener>{
-        new Listener{address, name, reUseAddr, reUsePort}};
+      return Listener{address, name, reUseAddr, reUsePort};
    }
 
    /**
@@ -39,14 +38,18 @@ public:
     *
     * @param timeout
     */
-   void enableKickoffIdle(size_t timeout) { m_idleTimeout = timeout; }
+   Listener &enableKickoffIdle(size_t timeout)
+   {
+      m_idleTimeout = timeout;
+      return *this;
+   }
 
    template <
      typename T, typename... Args,
      typename std::enable_if<trait::has_msg<T>() && trait::has_conn<T>() &&
                                trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setRecvMessageCallback(
@@ -58,6 +61,7 @@ public:
       TcpServer::setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -65,7 +69,7 @@ public:
      typename std::enable_if<trait::has_msg<T>() && trait::has_conn<T>() &&
                                !trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setRecvMessageCallback(
@@ -75,6 +79,7 @@ public:
       TcpServer::setConnectionCallback(
         [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -82,7 +87,7 @@ public:
      typename std::enable_if<trait::has_msg<T>() && !trait::has_conn<T>() &&
                                trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setRecvMessageCallback(
@@ -92,6 +97,7 @@ public:
       TcpServer::setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -99,7 +105,7 @@ public:
      typename std::enable_if<!trait::has_msg<T>() && trait::has_conn<T>() &&
                                trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setConnectionCallback(
@@ -109,6 +115,7 @@ public:
       TcpServer::setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -116,7 +123,7 @@ public:
      typename std::enable_if<trait::has_msg<T>() && !trait::has_conn<T>() &&
                                !trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setRecvMessageCallback(
@@ -124,6 +131,7 @@ public:
            data->onMessage(conn, buffer);
         });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -131,12 +139,13 @@ public:
      typename std::enable_if<trait::has_conn<T>() && !trait::has_msg<T>() &&
                                !trait::has_write_complete<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setConnectionCallback(
         [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       m_bind = data;
+      return *this;
    }
 
    template <
@@ -144,12 +153,13 @@ public:
      typename std::enable_if<trait::has_write_complete<T>() &&
                                !trait::has_msg<T>() && !trait::has_conn<T>(),
                              bool>::type = true>
-   void bind(Args &&...args)
+   Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
       TcpServer::setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
+      return *this;
    }
 
    // Gets the singleton object

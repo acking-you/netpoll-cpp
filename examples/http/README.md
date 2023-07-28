@@ -186,7 +186,7 @@
    
       NETPOLL_TCP_MESSAGE(conn, buffer)
       {
-         auto& ctx = netpoll::any_cast<Context&>(conn->getMutableContext());
+         auto& ctx = netpoll::any_cast<Context&>(conn->getContextRefMut());
          if (!ctx.parseRequest(buffer))
          {
             conn->send("HTTP/1.1 400 Bad Request\r\n\r\n");

@@ -11,4 +11,7 @@ protected:
    noncopyable()  = default;
    ~noncopyable() = default;
 };
+#define NETPOLL_MAKE_MOVEABLE(classname) \
+   classname(classname&&) = default; \
+   classname& operator=(classname&&) = default;
 }   // namespace netpoll

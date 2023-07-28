@@ -1,3 +1,4 @@
+include(${PROJECT_SOURCE_DIR}/cmake/add_executable_test.cmake)
 CPMAddPackage(
         doctest
         GIT_REPOSITORY https://gitee.com/acking-you/doctest.git
@@ -15,8 +16,7 @@ file(GLOB TEST_FILES
         "${PROJECT_SOURCE_DIR}/tests/*_test.cc"
         )
 
-
-add_executable(unittest ${TEST_FILES})
-target_link_libraries(unittest PRIVATE doctest_with_main nanobench netpoll)
-
-add_test(NAME unittest COMMAND unittest)
+foreach (test_file ${TEST_FILES})
+        add_executable_test_by_filename(${test_file})
+        target_link_libraries(${result} PRIVATE doctest_with_main nanobench netpoll)
+endforeach ()

@@ -92,7 +92,8 @@ struct server
             }
             else
             {
-               Context::Send(receiver,
+               connMap_.value.erase(requestChat.receiver);
+               Context::Send(conn,
                              CommonData{kBadResponse, "receiver is not exist"});
             }
             break;
@@ -130,6 +131,6 @@ int main()
 {
    auto loop     = netpoll::NewEventLoop();
    auto listener = netpoll::tcp::Listener::New({8080});
-   listener->bind<chat::server>();
+   listener.bind<chat::server>();
    loop.serve(listener);
 }

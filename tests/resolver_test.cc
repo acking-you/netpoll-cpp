@@ -6,15 +6,17 @@
 
 using namespace netpoll;
 
-TEST_CASE("test Resolver::syncResolve")
+TEST_SUITE_BEGIN("test Resolver");
+
+TEST_CASE("Resolver::syncResolve")
 {
    auto        res = Resolver::New(0);
    InetAddress addr;
    res->syncResolve("github.com", addr);
-   std::cout << addr.toIpPort();
+   std::cout << "url:github.com ip:" << addr.toIpPort();
 }
 
-TEST_CASE("test Resolver::resolve")
+TEST_CASE("Resolver::resolve")
 {
    auto               res = Resolver::New(0);
    InetAddress        addr;
@@ -24,5 +26,6 @@ TEST_CASE("test Resolver::resolve")
       addr = tmp;
    });
    pro.get_future().get();
-   std::cout << addr.toIpPort();
+   std::cout << "url:acking-you.github.io ip:" << addr.toIpPort();
 }
+TEST_SUITE_END;

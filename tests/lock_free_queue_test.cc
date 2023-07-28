@@ -67,7 +67,7 @@ void push_lockfree()
    thread_helper producers(kProducerNum, &run_lockfree_producer);
 }
 
-TEST_CASE("bench thread-safe queue push")
+TEST_CASE("bench thread-safe queue push in 10 therads")
 {
    {
       Timer tm;
@@ -79,12 +79,13 @@ TEST_CASE("bench thread-safe queue push")
    }
 }
 
-TEST_CASE("bench thread-safe queue push&get")
+TEST_CASE("bench thread-safe queue push&get in 10 threads")
 {
    const int sum   = kProducerNum * n;
    int       count = 0;
 
    std::string p;
+   std::cout << "mutex queue:";
    {
       Timer tm;
       push_mutex();
@@ -97,6 +98,8 @@ TEST_CASE("bench thread-safe queue push&get")
       }
    }
    CHECK_EQ(count, sum);
+
+   std::cout << "lock-free queue:";
    count = 0;
    {
       Timer tm;
@@ -109,5 +112,4 @@ TEST_CASE("bench thread-safe queue push&get")
       }
    }
    CHECK_EQ(count, sum);
-   std::cout << p;
 }

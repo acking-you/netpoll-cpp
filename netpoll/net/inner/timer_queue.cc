@@ -3,7 +3,7 @@
 #include <netpoll/net/channel.h>
 #include <netpoll/net/eventloop.h>
 #include <netpoll/util/move_wrapper.h>
-#ifdef __linux__
+#if defined(__linux__)
 #define ENABLE_ELG_LOG
 #include <elog/logger.h>
 #include <sys/timerfd.h>
@@ -17,7 +17,7 @@
 
 using namespace netpoll;
 using namespace std::chrono_literals;
-#ifdef __linux__
+#if defined(__linux__)
 static int createTimerfd()
 {
    int timerfd = ::timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
@@ -213,14 +213,14 @@ TimerId TimerQueue::addTimer(TimerCallback &&cb, const TimePoint &when,
 void TimerQueue::addTimerInLoop(TimerPtr &&timer)
 {
    m_loop->assertInLoopThread();
-#ifdef __linux__
-   auto when = timer->when();
-#endif
-   // the earliest timer changed
    m_timerIdSet.insert(timer->id());
-#ifdef __linux__
-   if (insert(std::move(timer))) { resetTimerfd(m_timerFd, when); }
+   if (insert(std::move(timer)))
+   {
+// the earliest timer changed
+#if defined(__linux__)
+      resetTimerfd(m_timerFd, when);
 #endif
+   }
 }
 
 void TimerQueue::cancelTimer(TimerId id)

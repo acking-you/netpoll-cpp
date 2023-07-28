@@ -66,7 +66,6 @@ int main()
    auto loop     = netpoll::NewEventLoop();
    auto listener = netpoll::tcp::Listener::New({1314});
 
-   listener->bind<http::Server>();
-   listener->enableKickoffIdle(60);
+   listener.bind<http::Server>().enableKickoffIdle(60);
    loop.serve(listener);
 }
