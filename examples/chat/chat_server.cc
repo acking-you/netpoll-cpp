@@ -130,7 +130,7 @@ struct server
 int main()
 {
    auto loop     = netpoll::NewEventLoop();
-   auto listener = netpoll::tcp::Listener::New({8080});
+   auto&& listener = netpoll::tcp::Listener::New({8080});
    listener.bind<chat::server>();
    loop.serve(listener);
 }

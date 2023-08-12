@@ -12,19 +12,22 @@
 namespace netpoll {
 
 namespace tcp {
-class Listener : private TcpServer
+class Listener
 {
 private:
    explicit Listener(const InetAddress &address,
                      const StringView  &name = "tcp_listener",
                      bool reUseAddr = true, bool reUsePort = true)
-     : TcpServer(nullptr, address, name, reUseAddr, reUsePort)
+     : m_server(new TcpServer(nullptr, address, name, reUseAddr, reUsePort))
    {
    }
 
-   void setLoop(EventLoop *loop) { TcpServer::setLoop(loop); }
+   void setLoop(EventLoop *loop) { m_server->setLoop(loop); }
 
 public:
+   Listener(Listener &&)            = default;
+   Listener &operator=(Listener &&) = default;
+
    inline static Listener New(const InetAddress &address,
                               const StringView  &name = "tcp_listener",
                               bool reUseAddr = true, bool reUsePort = true)
@@ -40,7 +43,7 @@ public:
     */
    Listener &enableKickoffIdle(size_t timeout)
    {
-      m_idleTimeout = timeout;
+      m_server->m_idleTimeout = timeout;
       return *this;
    }
 
@@ -52,13 +55,13 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setRecvMessageCallback(
+      m_server->setRecvMessageCallback(
         [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
            data->onMessage(conn, buffer);
         });
-      TcpServer::setConnectionCallback(
+      m_server->setConnectionCallback(
         [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
-      TcpServer::setWriteCompleteCallback(
+      m_server->setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
       return *this;
@@ -72,11 +75,11 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setRecvMessageCallback(
+      m_server->setRecvMessageCallback(
         [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
            data->onMessage(conn, buffer);
         });
-      TcpServer::setConnectionCallback(
+      m_server->setConnectionCallback(
         [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       m_bind = data;
       return *this;
@@ -90,11 +93,11 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setRecvMessageCallback(
+      m_server->setRecvMessageCallback(
         [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
            data->onMessage(conn, buffer);
         });
-      TcpServer::setWriteCompleteCallback(
+      m_server->setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
       return *this;
@@ -108,11 +111,11 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setConnectionCallback(
+      m_server->setConnectionCallback(
         [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
            data->onConnection(conn, buffer);
         });
-      TcpServer::setWriteCompleteCallback(
+      m_server->setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
       return *this;
@@ -126,7 +129,7 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setRecvMessageCallback(
+      m_server->setRecvMessageCallback(
         [data](TcpConnectionPtr const &conn, const MessageBuffer *buffer) {
            data->onMessage(conn, buffer);
         });
@@ -142,7 +145,7 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setConnectionCallback(
+      m_server->setConnectionCallback(
         [data](TcpConnectionPtr const &conn) { data->onConnection(conn); });
       m_bind = data;
       return *this;
@@ -156,7 +159,7 @@ public:
    Listener &bind(Args &&...args)
    {
       auto data = std::make_shared<T>(std::forward<Args>(args)...);
-      TcpServer::setWriteCompleteCallback(
+      m_server->setWriteCompleteCallback(
         [data](TcpConnectionPtr const &conn) { data->onWriteComplete(conn); });
       m_bind = data;
       return *this;
@@ -172,7 +175,8 @@ public:
 private:
    friend class netpoll::EventLoopWrap;
 
-   std::shared_ptr<void> m_bind;
+   std::unique_ptr<TcpServer> m_server;
+   std::shared_ptr<void>      m_bind;
 };
 
 }   // namespace tcp

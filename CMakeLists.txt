@@ -4,10 +4,10 @@ project(netpoll)
 # 检测C++版本，并给出提示
 if (CMAKE_CXX_STANDARD LESS 14)
     message(FATAL_ERROR "CMAKE_CXX_STANDARD must be at least 14")
-elseif (CMAKE_CXX_STANDARD EQUAL 14)
-    message(STATUS "Using C++14")
+elseif (CMAKE_CXX_STANDARD GREATER_EQUAL 14)
+    message(STATUS "Using C++${CMAKE_CXX_STANDARD}")
 else ()
-    message(STATUS "Using C++17")
+    message(STATUS "Not set C++ version,default using C++17")
     set(CMAKE_CXX_STANDARD 17)
 endif ()
 

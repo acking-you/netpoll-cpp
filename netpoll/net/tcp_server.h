@@ -180,6 +180,7 @@ public:
 
 private:
    friend class netpoll::tcp::Listener;
+   friend class EventLoopWrap;
    void handleCloseInLoop(const TcpConnectionPtr &connectionPtr);
    void newConnection(int fd, const InetAddress &peer);
    void connectionClosed(const TcpConnectionPtr &connectionPtr);

@@ -32,10 +32,10 @@ void EventLoopWrap::serve(tcp::Listener& listener)
       for (size_t i = 0; i < m_pool->size(); ++i)
          allEventLoop().push_back(m_pool->getLoop(i));
    }
-   listener.setIoLoopThreadPool(m_pool);
-   listener.setLoop(getEventLoop());
-   listener.start();
-   listener.getLoop()->loop();
+   listener.m_server->setIoLoopThreadPool(m_pool);
+   listener.m_server->setLoop(getEventLoop());
+   listener.m_server->start();
+   listener.m_server->getLoop()->loop();
 }
 
 void EventLoopWrap::serve(tcp::Dialer& dialer)
