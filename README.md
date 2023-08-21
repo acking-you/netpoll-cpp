@@ -50,7 +50,7 @@
       {
         auto loop = netpoll::NewEventLoop();
         auto listener = netpoll::tcp::Listener::New({6666});
-        listener->bind<server>();
+        listener.bind<server>();
         loop.serve(listener);
       }
       ```
