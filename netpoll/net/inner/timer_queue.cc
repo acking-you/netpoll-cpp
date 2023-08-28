@@ -214,6 +214,9 @@ void TimerQueue::addTimerInLoop(TimerPtr &&timer)
 {
    m_loop->assertInLoopThread();
    m_timerIdSet.insert(timer->id());
+#if defined(__linux__)
+    auto when = timer->when();
+#endif
    if (insert(std::move(timer)))
    {
 // the earliest timer changed
