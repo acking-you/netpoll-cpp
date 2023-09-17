@@ -54,7 +54,7 @@
         loop.serve(listener);
       }
       ```
-    * 支持定时清理空闲连接(利用引用计数) [tcp_connection_impl.h](./netpoll/net/inner/tcp_connection_impl.h)
+    * 支持定时清理空闲连接(利用引用计数) [tcp_connection_impl.h](./netpoll/net/inner/tcp_connection_impl.h) [详细介绍](https://acking-you.github.io/posts/tcp%E4%B8%AD%E5%B7%B2%E6%9C%89so_keepalive%E9%80%89%E9%A1%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%98%E8%A6%81%E5%9C%A8%E5%BA%94%E7%94%A8%E5%B1%82%E5%8A%A0%E5%85%A5%E5%BF%83%E8%B7%B3%E5%8C%85%E6%9C%BA%E5%88%B6/)
     * 两个层级的定时器,底层使用优先队列,支持最高和最低优先级的任务调度,上层使用时间轮,这是一个优化了内存的支持高延时的高性能时间轮(比如定时 `100^8s`,可能只需要`100*8byte`) 具体可以查看博客:[详细介绍](https://acking-you.github.io/posts/%E5%AE%9E%E7%8E%B0%E9%AB%98%E6%80%A7%E8%83%BD%E6%97%B6%E9%97%B4%E8%BD%AE%E7%94%A8%E4%BA%8E%E8%B8%A2%E5%87%BA%E7%A9%BA%E9%97%B2%E8%BF%9E%E6%8E%A5/).
     * 高性能的MPSC队列,正好和 `one loop per thread` 模型非常匹配.[lockfree_queue](./netpoll/util/lockfree_queue.h)
     * 支持异步缓冲域名解析. [resolver](./netpoll/net/resolver.h) [resolver_impl](./netpoll/net/inner/resolver_impl.h)
