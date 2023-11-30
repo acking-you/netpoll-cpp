@@ -4,7 +4,6 @@
 #include <string>
 
 TEST_SUITE_BEGIN("encode_util");
-TEST_CASE("In Unix") { CHECK_EQ(1, 1); }
 #ifdef _WIN32
 using namespace netpoll;
 TEST_CASE("test fromUtf8&toUtf8")
@@ -32,5 +31,7 @@ TEST_CASE("test fromNativePath&toNativePath")
       CHECK_EQ(windowsNativePath, netpoll::utils::toNativePath(windowsNetPath));
    }
 }
+#else
+TEST_CASE("In Unix") { CHECK_EQ(1, 1); }
 #endif
 TEST_SUITE_END;

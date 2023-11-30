@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include <netpoll/util/message_buffer.h>
+#include <iostream>
 using namespace netpoll;
 
 TEST_CASE("test MessageBuffer")

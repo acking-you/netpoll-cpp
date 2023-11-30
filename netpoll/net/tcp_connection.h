@@ -163,7 +163,7 @@ public:
     */
    bool hasContext() const
    {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
       return m_context.has_value();
 #else
       return m_context.empty();
@@ -176,7 +176,7 @@ public:
     */
    void clearContext()
    {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
       m_context.reset();
 #else
       m_context.clear();
