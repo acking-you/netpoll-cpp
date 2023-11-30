@@ -51,9 +51,7 @@ auto Timestamp::toFormatString(Time timePrecision) const -> std::string
    char buf[64] = {0};
    auto seconds =
      static_cast<time_t>(m_microSecondsSinceEpoch / kMicroSecondsPerSecond);
-   struct tm tm_time
-   {
-   };
+   tm tm_time;   // NOLINT
 
 #ifndef _WIN32
    localtime_r(&seconds, &tm_time);
