@@ -21,8 +21,6 @@ if ((CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-
 foreach (test_file ${TEST_FILES})
     add_executable_test_by_filename(${test_file})
     target_link_libraries(${result} PRIVATE doctest_with_main nanobench netpoll)
