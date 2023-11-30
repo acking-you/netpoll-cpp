@@ -11,7 +11,7 @@ TEST_CASE("test MessageBuffer")
       CHECK_EQ(messageBuffer.readableBytes(), 3);
       CHECK_EQ(StringView{messageBuffer.peek(), 3}, "abc");
       MessageBuffer buf = std::move(messageBuffer);
-      CHECK_EQ(messageBuffer.readableBytes(), 0);
+      CHECK_EQ(messageBuffer.readableBytes(), 0);   // NOLINT
       CHECK_EQ(buf.readableBytes(), 3);
       CHECK_EQ(StringView{buf.peek(), 3}, "abc");
       MessageBuffer bufCopy = buf;

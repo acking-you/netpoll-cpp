@@ -3,9 +3,10 @@
 
 #include <string>
 
+TEST_SUITE_BEGIN("encode_util");
+TEST_CASE("In Unix") { CHECK_EQ(1, 1); }
 #ifdef _WIN32
 using namespace netpoll;
-TEST_SUITE_BEGIN("encode_util");
 TEST_CASE("test fromUtf8&toUtf8")
 {
    const char*    u8chars = u8"你好世界";
@@ -31,5 +32,5 @@ TEST_CASE("test fromNativePath&toNativePath")
       CHECK_EQ(windowsNativePath, netpoll::utils::toNativePath(windowsNetPath));
    }
 }
-TEST_SUITE_END;
 #endif
+TEST_SUITE_END;

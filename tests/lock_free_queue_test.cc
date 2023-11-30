@@ -8,6 +8,7 @@
 #include <netpoll/util/lockfree_queue.h>
 
 #include <functional>
+#include <iostream>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -71,10 +72,12 @@ TEST_CASE("bench thread-safe queue push in 10 therads")
 {
    {
       Timer tm;
+      std::cout << "push mutex: ";
       push_mutex();
    }
    {
       Timer tm;
+      std::cout << "push lockfree: ";
       push_lockfree();
    }
 }
