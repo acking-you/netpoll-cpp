@@ -6,6 +6,7 @@
 #include "funcs.h"
 #ifndef _WIN32
 #include <sys/time.h>
+#include <time.h>
 #else
 #include <time.h>
 #include <WinSock2.h>
