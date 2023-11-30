@@ -14,9 +14,16 @@ CPMAddPackage(
 
 file(GLOB TEST_FILES
         "${PROJECT_SOURCE_DIR}/tests/*_test.cc"
-        )
+)
+
+if ((CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+        AND CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+endif ()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 foreach (test_file ${TEST_FILES})
-        add_executable_test_by_filename(${test_file})
-        target_link_libraries(${result} PRIVATE doctest_with_main nanobench netpoll)
+    add_executable_test_by_filename(${test_file})
+    target_link_libraries(${result} PRIVATE doctest_with_main nanobench netpoll)
 endforeach ()
