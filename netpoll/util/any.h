@@ -1,7 +1,7 @@
 #pragma once
 
 // use std::any if cpp >= 17
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
 #include <any>
 namespace netpoll {
 using Any = std::any;

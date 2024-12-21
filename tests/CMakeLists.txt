@@ -1,15 +1,15 @@
 include(${PROJECT_SOURCE_DIR}/cmake/add_executable_test.cmake)
 CPMAddPackage(
         doctest
-        GIT_REPOSITORY https://gitee.com/acking-you/doctest.git
-        GIT_TAG v2.4.9
+        GIT_REPOSITORY https://github.com/doctest/doctest.git
+        GIT_TAG v2.4.11
         GIT_SHALLOW TRUE
 )
 
 CPMAddPackage(
         nanobench
-        GIT_REPOSITORY https://gitee.com/acking-you/nanobench.git
-        GIT_TAG v4.1.0
+        GIT_REPOSITORY https://github.com/martinus/nanobench.git
+        GIT_TAG v4.3.11
         GIT_SHALLOW TRUE)
 
 file(GLOB TEST_FILES

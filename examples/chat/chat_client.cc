@@ -154,7 +154,7 @@ int main()
 {
    auto loop   = netpoll::NewEventLoop(1);
    auto dialer = netpoll::tcp::Dialer::New({"127.0.0.1", 8080});
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || (_MSC_VER && _MSVC_LANG >= 201703L)
    dialer.bind<chat::client>();
 #else
    netpoll::tcp::Dialer::Register<chat::client>();
